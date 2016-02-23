@@ -1,0 +1,29 @@
+{
+  "name": "memorize-decorator",
+  "version": "0.1.0",
+  "description": "A simple decorator for memorizing methods and properties (getters).",
+  "main": "bld/index.js",
+  "typings": "bld/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "node node_modules/mocha/bin/_mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vilic/memorize-decorator.git"
+  },
+  "keywords": ["memorize", "decorator", "typescript", "babel", "es7"],
+  "author": "vilicvane",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vilic/memorize-decorator/issues"
+  },
+  "homepage": "https://github.com/vilic/memorize-decorator#readme",
+  "devDependencies": {
+    "chai": "latest",
+    "mocha": "latest",
+    "sinon": "latest",
+    "source-map-support": "latest",
+    "typescript": "latest"
+  }
+}
