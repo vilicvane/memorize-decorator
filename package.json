@@ -5,14 +5,24 @@
   "main": "bld/index.js",
   "typings": "bld/index.d.ts",
   "scripts": {
+    "tsc": "tsc",
+    "tslint": "tslint",
+    "mocha": "mocha",
+    "lint": "tslint --project tsconfig.json --type-check",
     "build": "tsc",
-    "test": "node node_modules/mocha/bin/_mocha"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vilic/memorize-decorator.git"
   },
-  "keywords": ["memorize", "decorator", "typescript", "babel", "es7"],
+  "keywords": [
+    "memorize",
+    "decorator",
+    "typescript",
+    "babel",
+    "es7"
+  ],
   "author": "vilicvane",
   "license": "MIT",
   "bugs": {
@@ -20,10 +30,19 @@
   },
   "homepage": "https://github.com/vilic/memorize-decorator#readme",
   "devDependencies": {
-    "chai": "latest",
-    "mocha": "latest",
-    "sinon": "latest",
-    "source-map-support": "latest",
-    "typescript": "latest"
+    "@types/chai": "^4.0.3",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^8.0.24",
+    "@types/sinon": "^2.3.3",
+    "chai": "^4.1.1",
+    "mocha": "^3.5.0",
+    "sinon": "^3.2.1",
+    "source-map-support": "^0.4.16",
+    "tslint": "^5.6.0",
+    "typescript": "^2.4.2",
+    "vts": "^5.6.1"
+  },
+  "dependencies": {
+    "multikey-map": "^0.1.0"
   }
 }

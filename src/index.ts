@@ -1,80 +1,84 @@
 /*
-    Memorize Decorator v0.1
-    https://github.com/vilic/memorize-decorator
+  Memorize Decorator v0.1
+  https://github.com/vilic/memorize-decorator
 */
 
+import MultikeyMap from 'multikey-map';
+
 function decorateFunction<T extends Function>(target: T): T {
-    let hasCache = false;
-    let cache: any;
+  let cacheMap = new MultikeyMap<any[], any>();
 
-    let fn: T = <any>function () {
-        if (hasCache) {
-            return cache;
-        }
+  for (let propertyName of Object.getOwnPropertyNames(target)) {
+    let descriptor = Object.getOwnPropertyDescriptor(target, propertyName);
 
-        cache = target.call(this);
-        hasCache = true;
+    if (descriptor.writable) {
+      (fn as any)[propertyName] = (target as any)[propertyName];
+    } else if (descriptor.configurable) {
+      Object.defineProperty(fn, propertyName, descriptor);
+    }
+  }
 
-        return cache;
-    };
+  return fn as Function as T;
 
-    for (let propertyName of Object.getOwnPropertyNames(target)) {
-        let descriptor = Object.getOwnPropertyDescriptor(target, propertyName);
+  function fn(this: any, ...args: any[]): any {
+    let keys = [this, ...args];
 
-        if (descriptor.writable) {
-            (<any>fn)[propertyName] = (<any>target)[propertyName];
-        } else if (descriptor.configurable) {
-            Object.defineProperty(fn, propertyName, descriptor);
-        }
+    let [hasCache, cache] = cacheMap.hasAndGet(keys);
+
+    if (!hasCache) {
+      cache = target.apply(this, args);
+      cacheMap.set(keys, cache);
     }
 
-    return fn;
+    return cache;
+  }
 }
 
 export function memorize<T extends Function>(fn: T): T;
 export function memorize(): MethodDecorator;
 export function memorize(fn?: Function): any {
-    if (typeof fn === 'function') {
-        return decorateFunction(fn);
+  if (typeof fn === 'function') {
+    return decorateFunction(fn);
+  }
+
+  return (target: object, name: string, descriptor: PropertyDescriptor): PropertyDescriptor => {
+    let getter = descriptor.get;
+    let value = descriptor.value;
+
+    let fn: Function | undefined;
+    let descriptorItemName: string;
+
+    if (getter) {
+      fn = getter;
+      descriptorItemName = 'get';
+    } else if (typeof value === 'function') {
+      fn = value;
+      descriptorItemName = 'value';
     }
 
-    return (target: Object, name: string, descriptor: PropertyDescriptor): PropertyDescriptor => {
-        let getter = descriptor.get;
-        let value = descriptor.value;
+    if (!fn) {
+      throw new TypeError('Invalid decoration');
+    }
 
-        let fn: Function;
-        let descriptorItemName: string;
+    let cacheMap = new MultikeyMap<any[], any>();
 
-        if (getter) {
-            fn = getter;
-            descriptorItemName = 'get';
-        } else if (typeof value === 'function') {
-            fn = value;
-            descriptorItemName = 'value';
+    return {
+      configurable: descriptor.configurable,
+      enumerable: descriptor.enumerable,
+      [descriptorItemName](...args: any[]) {
+        let keys = [this, ...args];
+
+        let [hasCache, cache] = cacheMap.hasAndGet(keys);
+
+        if (!hasCache) {
+          cache = fn!.apply(this, args);
+          cacheMap.set(keys, cache);
         }
 
-        if (!fn) {
-            throw new TypeError('Invalid decoration');
-        }
-
-        let hasCache = false;
-        let cache: any;
-
-        return {
-            configurable: descriptor.configurable,
-            enumerable: descriptor.enumerable,
-            [descriptorItemName]() {
-                if (hasCache) {
-                    return cache;
-                }
-
-                cache = fn.call(this);
-                hasCache = true;
-
-                return cache;
-            }
-        };
+        return cache;
+      },
     };
+  };
 }
 
 export default memorize;
