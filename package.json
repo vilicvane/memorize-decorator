@@ -1,13 +1,10 @@
 {
   "name": "memorize-decorator",
   "version": "0.1.1",
-  "description": "A simple decorator for memorizing methods and properties (getters).",
+  "description": "A simple decorator that memorizes results of methods and getters.",
   "main": "bld/index.js",
   "typings": "bld/index.d.ts",
   "scripts": {
-    "tsc": "tsc",
-    "tslint": "tslint",
-    "mocha": "mocha",
     "lint": "tslint --project tsconfig.json --type-check",
     "build": "tsc",
     "test": "mocha"
