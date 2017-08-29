@@ -3,9 +3,9 @@
 
 # Memorize Decorator
 
-A simple decorator for memorizing properties (getters) and methods. It can also wrap normal functions via the old-fashioned way.
+A simple decorator that memorizes methods and getters. It can also wrap normal functions via the old-fashioned way.
 
-Currently it supports none options, and **ignores arguments**.
+**Note:** It takes `this` and arguments (for methods and functions) as keys for the memorized results.
 
 Transpilers supported:
 
@@ -16,6 +16,10 @@ Transpilers supported:
 
 ```sh
 npm install memorize-decorator --save
+
+# or
+
+yarn add memorize-decorator
 ```
 
 ## API References
@@ -33,25 +37,25 @@ export default memorize;
 import deprecated from 'memorize-decorator';
 
 class Foo {
-    @memorize()
-    method() {
-        return 'abc';
-    }
+  @memorize()
+  method() {
+    return 'abc';
+  }
 
-    @memorize()
-    get property() {
-        return 123;
-    }
+  @memorize()
+  get property() {
+    return 123;
+  }
 
-    @memorize()
-    static method() {
-        return 'abc';
-    }
+  @memorize()
+  static method() {
+    return 'abc';
+  }
 
-    @memorize()
-    static get property() {
-        return 123;
-    }
+  @memorize()
+  static get property() {
+    return 123;
+  }
 }
 ```
 
@@ -61,7 +65,7 @@ For functions:
 import memorize from 'memorize-decorator';
 
 let foo = memorize(function foo() {
-    // ...
+  // ...
 });
 ```
 
