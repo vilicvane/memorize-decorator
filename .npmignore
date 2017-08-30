@@ -4,6 +4,8 @@
 /test/
 /typings/
 
-tsconfig.json
-yarn.lock
+/tsconfig.json
+/tslint.json
+/yarn.lock
+
 .*
