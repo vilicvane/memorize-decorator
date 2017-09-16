@@ -1,7 +1,6 @@
 // tslint:disable:no-unused-expression
 
 import * as Sinon from 'sinon';
-import * as v from 'villa';
 
 import memorize, { memorize as theSameMemorize } from '..';
 
@@ -113,7 +112,7 @@ describe('memorize', () => {
       foo.property.should.equal(123);
       spy.calledOnce.should.be.true;
 
-      await v.sleep(10);
+      await new Promise(resolve => setTimeout(resolve, 10));
 
       foo.property.should.equal(123);
       spy.calledTwice.should.be.true;

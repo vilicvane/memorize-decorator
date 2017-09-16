@@ -446,10 +446,6 @@ typescript@^2.5.2:
   version "2.5.2"
   resolved "http://registry.npm.taobao.org/typescript/download/typescript-2.5.2.tgz#038a95f7d9bbb420b1bf35ba31d4c5c1dd3ffe34"
 
-villa@^0.3.0:
-  version "0.3.0"
-  resolved "http://registry.npm.taobao.org/villa/download/villa-0.3.0.tgz#2651a40c64ca1eeec89f15083e53e38f21cf6d14"
-
 vts@^5.6.2:
   version "5.6.2"
   resolved "http://registry.npm.taobao.org/vts/download/vts-5.6.2.tgz#60f1651184b1112aed37e4664dedd43891eb399a"
