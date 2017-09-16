@@ -1,6 +1,7 @@
 // tslint:disable:no-unused-expression
 
 import * as Sinon from 'sinon';
+import * as v from 'villa';
 
 import memorize, { memorize as theSameMemorize } from '..';
 
@@ -90,6 +91,32 @@ describe('memorize', () => {
 
       Foo.method().should.equal(123);
       spy.calledOnce.should.be.true;
+    });
+
+    it('should handle timeout', async () => {
+      let spy = Sinon.spy(() => 123);
+
+      class Foo {
+        @memorize({timeout: 0})
+        get property(): number {
+          return spy();
+        }
+      }
+
+      let foo = new Foo();
+
+      spy.called.should.be.false;
+
+      foo.property.should.equal(123);
+      spy.calledOnce.should.be.true;
+
+      foo.property.should.equal(123);
+      spy.calledOnce.should.be.true;
+
+      await v.sleep(10);
+
+      foo.property.should.equal(123);
+      spy.calledTwice.should.be.true;
     });
   });
 

@@ -10,12 +10,18 @@
     "noImplicitReturns": true,
     "noEmitOnError": true,
     "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "declaration": true,
     "stripInternal": true,
     "skipDefaultLibCheck": true,
     "sourceMap": true,
     "newLine": "LF",
     "rootDir": "src",
-    "outDir": "bld"
+    "outDir": "bld",
+    "plugins": [
+      {
+        "name": "tslint-language-service"
+      }
+    ]
   }
 }

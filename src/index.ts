@@ -3,26 +3,31 @@
   https://github.com/vilic/memorize-decorator
 */
 
+import asap = require('asap');
 import MultikeyMap from 'multikey-map';
 
-function decorateFunction<T extends Function>(target: T): T {
-  let cacheMap = new MultikeyMap<any[], any>();
-
-  return buildIntermediateFunction(target, cacheMap) as Function as T;
+export interface MemorizeOptions {
+  timeout?: number;
 }
 
-export function memorize<T extends Function>(fn: T): T;
-export function memorize(): MethodDecorator;
-export function memorize(fn?: Function): any {
+function decorateFunction<T extends Function>(fn: T, options: MemorizeOptions | undefined): T {
+  return buildIntermediateFunction(fn, options) as Function as T;
+}
+
+export function memorize<T extends Function>(fn: T, options?: MemorizeOptions): T;
+export function memorize(options?: MemorizeOptions): MethodDecorator;
+export function memorize(fn?: Function | MemorizeOptions, options?: MemorizeOptions): any {
   if (typeof fn === 'function') {
-    return decorateFunction(fn);
+    return decorateFunction(fn, options);
+  } else {
+    options = fn;
   }
 
-  return (target: object, name: string, descriptor: PropertyDescriptor): PropertyDescriptor => {
+  return (_target: object, _name: string, descriptor: PropertyDescriptor): PropertyDescriptor => {
     let getter = descriptor.get;
     let value = descriptor.value;
 
-    let fn: Function | undefined;
+    let fn: Function;
     let descriptorItemName: string;
 
     if (getter) {
@@ -31,25 +36,26 @@ export function memorize(fn?: Function): any {
     } else if (typeof value === 'function') {
       fn = value;
       descriptorItemName = 'value';
-    }
-
-    if (!fn) {
+    } else {
       throw new TypeError('Invalid decoration');
     }
-
-    let cacheMap = new MultikeyMap<any[], any>();
 
     return {
       configurable: descriptor.configurable,
       enumerable: descriptor.enumerable,
-      [descriptorItemName!]: buildIntermediateFunction(fn, cacheMap),
+      [descriptorItemName!]: buildIntermediateFunction(fn, options),
     };
   };
 }
 
 export default memorize;
 
-function buildIntermediateFunction(originalFn: Function, cacheMap: MultikeyMap<any[], any>) {
+function buildIntermediateFunction(
+  originalFn: Function,
+  {timeout = Infinity}: MemorizeOptions = {},
+) {
+  let cacheMap = new MultikeyMap<any[], any>();
+
   let name = originalFn.name;
   let nameDescriptor = Object.getOwnPropertyDescriptor(fn, 'name');
 
@@ -69,6 +75,14 @@ function buildIntermediateFunction(originalFn: Function, cacheMap: MultikeyMap<a
     if (!hasCache) {
       cache = originalFn.apply(this, args);
       cacheMap.set(keys, cache);
+
+      if (timeout !== Infinity) {
+        if (timeout === 0) {
+          asap(() => cacheMap.delete(keys));
+        } else {
+          setTimeout(() => cacheMap.delete(keys), timeout);
+        }
+      }
     }
 
     return cache;

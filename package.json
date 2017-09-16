@@ -36,10 +36,13 @@
     "sinon": "^3.2.1",
     "source-map-support": "^0.4.16",
     "tslint": "^5.6.0",
-    "typescript": "^2.4.2",
-    "vts": "^5.6.1"
+    "tslint-language-service": "^0.9.6",
+    "typescript": "^2.5.2",
+    "villa": "^0.3.0",
+    "vts": "^5.6.2"
   },
   "dependencies": {
-    "multikey-map": "^0.1.0"
+    "asap": "^2.0.6",
+    "multikey-map": "^0.2.0"
   }
 }
