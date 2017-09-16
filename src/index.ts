@@ -8,30 +8,7 @@ import MultikeyMap from 'multikey-map';
 function decorateFunction<T extends Function>(target: T): T {
   let cacheMap = new MultikeyMap<any[], any>();
 
-  for (let propertyName of Object.getOwnPropertyNames(target)) {
-    let descriptor = Object.getOwnPropertyDescriptor(target, propertyName);
-
-    if (descriptor.writable) {
-      (fn as any)[propertyName] = (target as any)[propertyName];
-    } else if (descriptor.configurable) {
-      Object.defineProperty(fn, propertyName, descriptor);
-    }
-  }
-
-  return fn as Function as T;
-
-  function fn(this: any, ...args: any[]): any {
-    let keys = [this, ...args];
-
-    let [hasCache, cache] = cacheMap.hasAndGet(keys);
-
-    if (!hasCache) {
-      cache = target.apply(this, args);
-      cacheMap.set(keys, cache);
-    }
-
-    return cache;
-  }
+  return buildIntermediateFunction(target, cacheMap) as Function as T;
 }
 
 export function memorize<T extends Function>(fn: T): T;
@@ -65,20 +42,35 @@ export function memorize(fn?: Function): any {
     return {
       configurable: descriptor.configurable,
       enumerable: descriptor.enumerable,
-      [descriptorItemName](...args: any[]) {
-        let keys = [this, ...args];
-
-        let [hasCache, cache] = cacheMap.hasAndGet(keys);
-
-        if (!hasCache) {
-          cache = fn!.apply(this, args);
-          cacheMap.set(keys, cache);
-        }
-
-        return cache;
-      },
+      [descriptorItemName!]: buildIntermediateFunction(fn, cacheMap),
     };
   };
 }
 
 export default memorize;
+
+function buildIntermediateFunction(originalFn: Function, cacheMap: MultikeyMap<any[], any>) {
+  let name = originalFn.name;
+  let nameDescriptor = Object.getOwnPropertyDescriptor(fn, 'name');
+
+  if (nameDescriptor.configurable) {
+    Object.defineProperty(fn, 'name', {value: name});
+  } else if (nameDescriptor.writable) {
+    (fn as any).name = name;
+  }
+
+  return fn;
+
+  function fn(this: any, ...args: any[]): any {
+    let keys = [this, ...args];
+
+    let [hasCache, cache] = cacheMap.hasAndGet(keys);
+
+    if (!hasCache) {
+      cache = originalFn.apply(this, args);
+      cacheMap.set(keys, cache);
+    }
+
+    return cache;
+  }
+}
