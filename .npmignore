@@ -2,7 +2,7 @@
 /bld/test/
 /src/
 /test/
-/typings/
+/types/
 
 /tsconfig.json
 /tslint.json
