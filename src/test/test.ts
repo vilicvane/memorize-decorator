@@ -93,7 +93,7 @@ describe('memorize', () => {
       spy.calledOnce.should.be.true;
     });
 
-    it('should handle timeout', async () => {
+    it('should handle ttl', async () => {
       let spy = Sinon.spy(() => 123);
 
       class Foo {
@@ -117,6 +117,55 @@ describe('memorize', () => {
 
       foo.property.should.equal(123);
       spy.calledTwice.should.be.true;
+    });
+
+    it('should handle ttl being false', async () => {
+      let spy = Sinon.spy(() => 123);
+
+      class Foo {
+        @memorize({ttl: false})
+        get property(): number {
+          return spy();
+        }
+      }
+
+      let foo = new Foo();
+
+      spy.called.should.be.false;
+
+      foo.property.should.equal(123);
+      spy.calledOnce.should.be.true;
+
+      foo.property.should.equal(123);
+      spy.calledOnce.should.be.true;
+
+      await new Promise<void>(resolve => setTimeout(resolve, 0));
+
+      foo.property.should.equal(123);
+      spy.calledTwice.should.be.true;
+    });
+
+    it('should handle ttl being "async"', async () => {
+      let values = [123, 456];
+
+      class Foo {
+        @memorize({ttl: 'async'})
+        async getValue(): Promise<number> {
+          await new Promise<void>(resolve => setTimeout(resolve, 10));
+          return values.shift()!;
+        }
+      }
+
+      let foo = new Foo();
+
+      let [a, b] = await Promise.all([foo.getValue(), foo.getValue()]);
+
+      a.should.equal(123);
+      b.should.equal(123);
+
+      let c = await foo.getValue();
+
+      c.should.equal(456);
     });
   });
 

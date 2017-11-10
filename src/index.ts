@@ -7,7 +7,7 @@ import asap = require('asap');
 import MultikeyMap from 'multikey-map';
 
 export interface MemorizeOptions {
-  ttl?: number;
+  ttl?: number | false | 'async';
 }
 
 function decorateFunction<T extends Function>(
@@ -89,8 +89,11 @@ function buildIntermediateFunction(
       cache = originalFn.apply(this, args);
       cacheMap.set(keys, cache);
 
-      if (ttl !== Infinity) {
-        if (ttl === 0) {
+      if (ttl === 'async') {
+        // tslint:disable-next-line:no-floating-promises
+        Promise.resolve(cache).then(() => cacheMap.delete(keys));
+      } else if (ttl !== Infinity) {
+        if (ttl === false) {
           asap(() => cacheMap.delete(keys));
         } else {
           setTimeout(() => cacheMap.delete(keys), ttl);
