@@ -1,5 +1,5 @@
 /*
-  Memorize Decorator v0.1
+  Memorize Decorator v0.2
   https://github.com/vilic/memorize-decorator
 */
 
@@ -7,7 +7,7 @@ import asap = require('asap');
 import MultikeyMap from 'multikey-map';
 
 export interface MemorizeOptions {
-  timeout?: number;
+  ttl?: number;
 }
 
 function decorateFunction<T extends Function>(
@@ -65,7 +65,7 @@ export default memorize;
 
 function buildIntermediateFunction(
   originalFn: Function,
-  {timeout = Infinity}: MemorizeOptions = {},
+  {ttl = Infinity}: MemorizeOptions = {},
 ) {
   let cacheMap = new MultikeyMap<any[], any>();
 
@@ -89,11 +89,11 @@ function buildIntermediateFunction(
       cache = originalFn.apply(this, args);
       cacheMap.set(keys, cache);
 
-      if (timeout !== Infinity) {
-        if (timeout === 0) {
+      if (ttl !== Infinity) {
+        if (ttl === 0) {
           asap(() => cacheMap.delete(keys));
         } else {
-          setTimeout(() => cacheMap.delete(keys), timeout);
+          setTimeout(() => cacheMap.delete(keys), ttl);
         }
       }
     }

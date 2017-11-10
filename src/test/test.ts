@@ -97,7 +97,7 @@ describe('memorize', () => {
       let spy = Sinon.spy(() => 123);
 
       class Foo {
-        @memorize({timeout: 0})
+        @memorize({ttl: 0})
         get property(): number {
           return spy();
         }
