@@ -7,19 +7,12 @@ A simple decorator that memorizes methods and getters. It can also wrap normal f
 
 **Note:** It takes `this` and arguments (for methods and functions) as keys for the memorized results.
 
-Transpilers supported:
-
-- **TypeScript** with `experimentalDecorators` option enabled.
-- **Babel** with [transform-decorators-legacy](https://github.com/loganfsmyth/babel-plugin-transform-decorators-legacy) for version 6.x.
-
 ## Install
 
 ```sh
-npm install memorize-decorator --save
-
-# or
-
 yarn add memorize-decorator
+# or
+npm install memorize-decorator --save
 ```
 
 ## API References
@@ -37,12 +30,26 @@ export default memorize;
 import deprecated from 'memorize-decorator';
 
 class Foo {
-  @memorize()
+  @memorize({
+    // Delete cache after 100 milliseconds.
+    ttl: 100,
+  })
   method() {
     return 'abc';
   }
 
-  @memorize()
+  @memorize({
+    // Keep cache until returned Promise gets fulfilled.
+    ttl: 'async',
+  })
+  async asyncMethod() {
+    return 'abc';
+  }
+
+  @memorize({
+    // Use `asap` package to schedule cache deletion.
+    ttl: false,
+  })
   get property() {
     return 123;
   }
