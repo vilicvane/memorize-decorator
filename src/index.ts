@@ -10,20 +10,33 @@ export interface MemorizeOptions {
   timeout?: number;
 }
 
-function decorateFunction<T extends Function>(fn: T, options: MemorizeOptions | undefined): T {
-  return buildIntermediateFunction(fn, options) as Function as T;
+function decorateFunction<T extends Function>(
+  fn: T,
+  options: MemorizeOptions | undefined,
+): T {
+  return (buildIntermediateFunction(fn, options) as Function) as T;
 }
 
-export function memorize<T extends Function>(fn: T, options?: MemorizeOptions): T;
+export function memorize<T extends Function>(
+  fn: T,
+  options?: MemorizeOptions,
+): T;
 export function memorize(options?: MemorizeOptions): MethodDecorator;
-export function memorize(fn?: Function | MemorizeOptions, options?: MemorizeOptions): any {
+export function memorize(
+  fn?: Function | MemorizeOptions,
+  options?: MemorizeOptions,
+): any {
   if (typeof fn === 'function') {
     return decorateFunction(fn, options);
   } else {
     options = fn;
   }
 
-  return (_target: object, _name: string, descriptor: PropertyDescriptor): PropertyDescriptor => {
+  return (
+    _target: object,
+    _name: string,
+    descriptor: PropertyDescriptor,
+  ): PropertyDescriptor => {
     let getter = descriptor.get;
     let value = descriptor.value;
 
@@ -43,7 +56,7 @@ export function memorize(fn?: Function | MemorizeOptions, options?: MemorizeOpti
     return {
       configurable: descriptor.configurable,
       enumerable: descriptor.enumerable,
-      [descriptorItemName!]: buildIntermediateFunction(fn, options),
+      [descriptorItemName]: buildIntermediateFunction(fn, options),
     };
   };
 }
@@ -57,7 +70,7 @@ function buildIntermediateFunction(
   let cacheMap = new MultikeyMap<any[], any>();
 
   let name = originalFn.name;
-  let nameDescriptor = Object.getOwnPropertyDescriptor(fn, 'name');
+  let nameDescriptor = Object.getOwnPropertyDescriptor(fn, 'name')!;
 
   if (nameDescriptor.configurable) {
     Object.defineProperty(fn, 'name', {value: name});

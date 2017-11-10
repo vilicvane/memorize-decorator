@@ -2,9 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "lib": [
-      "esnext"
-    ],
+    "lib": ["esnext"],
     "experimentalDecorators": true,
     "strict": true,
     "noImplicitReturns": true,
@@ -18,10 +16,6 @@
     "newLine": "LF",
     "rootDir": "src",
     "outDir": "bld",
-    "plugins": [
-      {
-        "name": "tslint-language-service"
-      }
-    ]
+    "plugins": [{"name": "tslint-language-service"}]
   }
 }

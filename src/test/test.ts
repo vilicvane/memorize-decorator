@@ -1,8 +1,9 @@
 // tslint:disable:no-unused-expression
+// tslint:disable:no-implicit-dependencies
 
 import * as Sinon from 'sinon';
 
-import memorize, { memorize as theSameMemorize } from '..';
+import memorize, {memorize as theSameMemorize} from '..';
 
 describe('memorize', () => {
   context('exports', () => {
@@ -112,7 +113,7 @@ describe('memorize', () => {
       foo.property.should.equal(123);
       spy.calledOnce.should.be.true;
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise<void>(resolve => setTimeout(resolve, 10));
 
       foo.property.should.equal(123);
       spy.calledTwice.should.be.true;
