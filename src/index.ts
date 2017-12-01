@@ -91,16 +91,20 @@ function buildIntermediateFunction(
 
       if (ttl === 'async') {
         // tslint:disable-next-line:no-floating-promises
-        Promise.resolve(cache).then(() => cacheMap.delete(keys));
+        Promise.resolve(cache).then(cleanUp, cleanUp);
       } else if (ttl !== Infinity) {
         if (ttl === false) {
-          asap(() => cacheMap.delete(keys));
+          asap(cleanUp);
         } else {
-          setTimeout(() => cacheMap.delete(keys), ttl);
+          setTimeout(cleanUp, ttl);
         }
       }
     }
 
     return cache;
+
+    function cleanUp() {
+      cacheMap.delete(keys);
+    }
   }
 }
