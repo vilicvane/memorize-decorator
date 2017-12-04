@@ -147,7 +147,7 @@ describe('memorize', () => {
 
     it('should handle ttl being "async"', async () => {
       let values = [123, 456, 789];
-      let instable = true;
+      let unstable = true;
 
       class Foo {
         @memorize({ttl: 'async'})
@@ -157,9 +157,9 @@ describe('memorize', () => {
         }
 
         @memorize({ttl: 'async'})
-        async getInstableValue(): Promise<number> {
+        async getUnstableValue(): Promise<number> {
           await new Promise<void>((resolve, reject) => {
-            if (instable) {
+            if (unstable) {
               reject();
             } else {
               setTimeout(resolve, 10);
@@ -185,12 +185,12 @@ describe('memorize', () => {
       let f = 0;
 
       try {
-        await Promise.all([foo.getInstableValue(), foo.getInstableValue()]);
+        await Promise.all([foo.getUnstableValue(), foo.getUnstableValue()]);
       } catch (err) {
-        instable = false;
+        unstable = false;
         [e, f] = await Promise.all([
-          foo.getInstableValue(),
-          foo.getInstableValue(),
+          foo.getUnstableValue(),
+          foo.getUnstableValue(),
         ]);
       }
 
