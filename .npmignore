@@ -10,4 +10,6 @@
 
 /yarn.lock
 
+*.js.map
+
 .*
