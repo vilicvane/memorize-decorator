@@ -146,12 +146,26 @@ describe('memorize', () => {
     });
 
     it('should handle ttl being "async"', async () => {
-      let values = [123, 456];
+      let values = [123, 456, 789];
+      let instable = true;
 
       class Foo {
         @memorize({ttl: 'async'})
         async getValue(): Promise<number> {
           await new Promise<void>(resolve => setTimeout(resolve, 10));
+          return values.shift()!;
+        }
+
+        @memorize({ttl: 'async'})
+        async getInstableValue(): Promise<number> {
+          await new Promise<void>((resolve, reject) => {
+            if (instable) {
+              reject();
+            } else {
+              setTimeout(resolve, 10);
+            }
+          });
+
           return values.shift()!;
         }
       }
@@ -166,6 +180,22 @@ describe('memorize', () => {
       let c = await foo.getValue();
 
       c.should.equal(456);
+
+      let e = 0;
+      let f = 0;
+
+      try {
+        await Promise.all([foo.getInstableValue(), foo.getInstableValue()]);
+      } catch (err) {
+        instable = false;
+        [e, f] = await Promise.all([
+          foo.getInstableValue(),
+          foo.getInstableValue(),
+        ]);
+      }
+
+      e.should.equal(789);
+      f.should.equal(789);
     });
   });
 
