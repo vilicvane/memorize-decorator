@@ -109,8 +109,8 @@ function buildIntermediateFunction(
 
       if (ttl === 'async') {
         // tslint:disable-next-line:no-floating-promises
-        Promise.resolve(cache).then(cleanUp, cleanUp);
-        count();
+        const cleaner = atMostNTimes !== Infinity ? count : cleanUp;
+        Promise.resolve(cache).then(cleaner, cleaner);
       } else if (ttl === false) {
         asap(cleanUp);
       } else if (!isNaN(Number(ttl)) && ttl !== Infinity) {
