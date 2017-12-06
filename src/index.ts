@@ -116,9 +116,12 @@ function buildIntermediateFunction(
       } else if (!isNaN(Number(ttl)) && ttl !== Infinity) {
         setTimeout(cleanUp, ttl);
         count();
+      } else {
+        count();
       }
     }
 
+    count();
     return cache;
 
     function cleanUp() {
