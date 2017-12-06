@@ -3,12 +3,15 @@
 
 import * as Sinon from 'sinon';
 
-import memorize, {memorize as theSameMemorize} from '..';
+import memorize, {memorize as theSameMemorize, memorizeDecorator} from '..';
 
 describe('memorize', () => {
   context('exports', () => {
     it('should export default', () => {
       memorize.should.equal(theSameMemorize);
+    });
+    it('should export decorator', () => {
+      memorizeDecorator.should.a('function');
     });
   });
 
@@ -196,6 +199,24 @@ describe('memorize', () => {
 
       e.should.equal(789);
       f.should.equal(789);
+    });
+
+    it('should handle atMostNTimes', async () => {
+      let times = 0;
+      class Foo {
+        @memorizeDecorator({ttl: 'async', atMostNTimes: 2})
+        async getValue(): Promise<number> {
+          await new Promise<void>(resolve => setTimeout(resolve, 10));
+          times++;
+          return times;
+        }
+      }
+      let foo = new Foo;
+      (await foo.getValue()).should.equal(1, 'the first call');
+      (await foo.getValue()).should.equal(1, 'the second call');
+      (await foo.getValue()).should.equal(2, 'the third call');
+      (await foo.getValue()).should.equal(2, 'the 4th call');
+      (await foo.getValue()).should.equal(3, 'the 5th call');
     });
   });
 
