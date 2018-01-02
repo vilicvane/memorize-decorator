@@ -211,7 +211,7 @@ describe('memorize', () => {
           return times;
         }
       }
-      let foo = new Foo;
+      let foo = new Foo();
       (await foo.getValue()).should.equal(1, 'the first call');
       (await foo.getValue()).should.equal(1, 'the second call');
       (await foo.getValue()).should.equal(2, 'the third call');

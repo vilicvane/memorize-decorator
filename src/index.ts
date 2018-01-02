@@ -8,11 +8,11 @@ import MultikeyMap from 'multikey-map';
 
 export interface MemorizeOptions {
   /** Time to live:
-   * 
+   *
    *  [number]: Delete cache after N milliseconds.
-   * 
+   *
    *  false: Use `asap` package to schedule cache deletion.
-   * 
+   *
    *  'async': Keep cache until returned Promise gets fulfilled.
    */
   ttl?: number | false | 'async';
@@ -77,7 +77,7 @@ export function memorize(
  */
 export function memorizeDecorator(options?: MemorizeOptions): MethodDecorator {
   return memorize(options);
-};
+}
 export default memorize;
 
 function buildIntermediateFunction(
@@ -131,8 +131,12 @@ function buildIntermediateFunction(
       const set = (x: number) => countMap.set(keys, x);
       const value = countMap.get(keys);
       if (typeof value === 'number') {
-        if (value === atMostNTimes) { cleanUp(); set(0); }
-        else { set(value + 1); }
+        if (value === atMostNTimes) {
+          cleanUp();
+          set(0);
+        } else {
+          set(value + 1);
+        }
       } else {
         set(1);
       }
