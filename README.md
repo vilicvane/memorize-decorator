@@ -3,9 +3,11 @@
 
 # Memorize Decorator
 
-A simple decorator that memorizes methods and getters. It can also wrap normal functions via the old-fashioned way.
+A simple decorator that memorizes methods and getters. It can also wrap normal
+functions via the old-fashioned way.
 
-**Note:** It takes `this` and arguments (for methods and functions) as keys for the memorized results.
+**Note:** It takes `this` and arguments (for methods and functions) as keys for
+the memorized results.
 
 ## Install
 
@@ -20,14 +22,16 @@ npm install memorize-decorator --save
 ```ts
 export declare function memorize<T extends Function>(fn: T): T;
 export declare function memorize(): MethodDecorator;
+export declare function memorizeDecorator(): MethodDecorator;
 
 export default memorize;
+export memorizeDecorator; // <- This one is the same but with no function overload
 ```
 
 ## Usage
 
 ```ts
-import deprecated from 'memorize-decorator';
+import memorize from 'memorize-decorator';
 
 class Foo {
   @memorize({
@@ -36,6 +40,15 @@ class Foo {
   })
   method() {
     return 'abc';
+  }
+
+  private calls = 0;
+  @memorize({
+    // Delete cache after 5 calls.
+    atMostNTimes: 5,
+  })
+  oh() {
+    return calls++;
   }
 
   @memorize({

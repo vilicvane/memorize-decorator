@@ -7,7 +7,17 @@ import asap = require('asap');
 import MultikeyMap from 'multikey-map';
 
 export interface MemorizeOptions {
+  /** Time to live:
+   *
+   *  [number]: Delete cache after N milliseconds.
+   *
+   *  false: Use `asap` package to schedule cache deletion.
+   *
+   *  'async': Keep cache until returned Promise gets fulfilled.
+   */
   ttl?: number | false | 'async';
+  /** Delete cache after N calls. Ignored if `ttl` is `false` */
+  atMostNTimes?: number;
 }
 
 function decorateFunction<T extends Function>(
@@ -61,13 +71,21 @@ export function memorize(
   };
 }
 
+/* This one is for Typescript type inference.
+ * For memorize, the first type is Function | MemorizeOptions,
+ * Typescript can not hint you any parameters of MemorizeOptions.
+ */
+export function memorizeDecorator(options?: MemorizeOptions): MethodDecorator {
+  return memorize(options);
+}
 export default memorize;
 
 function buildIntermediateFunction(
   originalFn: Function,
-  {ttl = Infinity}: MemorizeOptions = {},
+  {ttl = Infinity, atMostNTimes = Infinity}: MemorizeOptions = {},
 ) {
   let cacheMap = new MultikeyMap<any[], any>();
+  let countMap = new MultikeyMap<any[], number>();
 
   let name = originalFn.name;
   let nameDescriptor = Object.getOwnPropertyDescriptor(fn, 'name')!;
@@ -91,20 +109,37 @@ function buildIntermediateFunction(
 
       if (ttl === 'async') {
         // tslint:disable-next-line:no-floating-promises
-        Promise.resolve(cache).then(cleanUp, cleanUp);
-      } else if (ttl !== Infinity) {
-        if (ttl === false) {
-          asap(cleanUp);
-        } else {
-          setTimeout(cleanUp, ttl);
-        }
+        const cleaner = atMostNTimes !== Infinity ? count : cleanUp;
+        Promise.resolve(cache).then(cleaner, cleaner);
+      } else if (ttl === false) {
+        asap(cleanUp);
+      } else if (!isNaN(Number(ttl)) && ttl !== Infinity) {
+        setTimeout(cleanUp, ttl);
+        count();
+      } else {
+        count();
       }
     }
 
+    count();
     return cache;
 
     function cleanUp() {
       cacheMap.delete(keys);
+    }
+    function count() {
+      const set = (x: number) => countMap.set(keys, x);
+      const value = countMap.get(keys);
+      if (typeof value === 'number') {
+        if (value === atMostNTimes) {
+          cleanUp();
+          set(0);
+        } else {
+          set(value + 1);
+        }
+      } else {
+        set(1);
+      }
     }
   }
 }
