@@ -42,7 +42,6 @@
     "vts": "^5.8.2"
   },
   "dependencies": {
-    "asap": "^2.0.6",
     "multikey-map": "^0.2.0"
   }
 }

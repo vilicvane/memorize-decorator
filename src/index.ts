@@ -3,8 +3,9 @@
   https://github.com/vilic/memorize-decorator
 */
 
-import asap = require('asap');
 import MultikeyMap from 'multikey-map';
+
+const RESOLVED = Promise.resolve();
 
 export interface MemorizeOptions {
   ttl?: number | false | 'async';
@@ -94,7 +95,8 @@ function buildIntermediateFunction(
         Promise.resolve(cache).then(cleanUp, cleanUp);
       } else if (ttl !== Infinity) {
         if (ttl === false) {
-          asap(cleanUp);
+          // tslint:disable-next-line:no-floating-promises
+          RESOLVED.then(cleanUp);
         } else {
           setTimeout(cleanUp, ttl);
         }
