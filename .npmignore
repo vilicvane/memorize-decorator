@@ -1,6 +1,5 @@
 /.vscode/
-/bld/test/
-/src/
+/*/test/
 /test/
 /types/
 
