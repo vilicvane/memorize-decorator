@@ -9,6 +9,4 @@
 
 /yarn.lock
 
-*.js.map
-
 .*
