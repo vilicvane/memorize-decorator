@@ -1,6 +1,6 @@
 {
   "name": "memorize-decorator",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A simple decorator that memorizes results of methods and getters.",
   "main": "bld/index.js",
   "typings": "bld/index.d.ts",
