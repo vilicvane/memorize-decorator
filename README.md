@@ -12,6 +12,8 @@ yarn add memorize-decorator
 npm install memorize-decorator --save
 ```
 
+> For **CommonJS** and **experimental decorator**, use version "0.2".
+
 ## API References
 
 ```ts
