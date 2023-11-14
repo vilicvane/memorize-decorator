@@ -1,0 +1,24 @@
+{
+  "$schema": "boilerplate.schema.json",
+  "boilerplate": "@mufan/code-boilerplates/typescript",
+  "options": {
+    "name": "memorize-decorator",
+    "description": "A simple decorator that memorizes results of methods and getters.",
+    "license": "MIT",
+    "author": "vilicvane",
+    "defaultBranch": "master",
+    "packageManager": "yarn",
+    "type": "module",
+    "projects": [
+      {
+        "name": "library"
+      },
+      {
+        "name": "test",
+        "references": [
+          "library"
+        ]
+      }
+    ]
+  }
+}

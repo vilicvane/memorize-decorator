@@ -1,9 +1,6 @@
-[![NPM Package](https://badge.fury.io/js/memorize-decorator.svg)](https://www.npmjs.com/package/memorize-decorator)
-[![Build Status](https://travis-ci.org/vilic/memorize-decorator.svg)](https://travis-ci.org/vilic/memorize-decorator)
-
 # Memorize Decorator
 
-A simple decorator that memorizes methods and getters. It can also wrap normal functions via the old-fashioned way.
+A simple decorator that memorizes results of methods and getters. It can also wrap normal functions via the old-fashioned way.
 
 **Note:** It takes `this` and arguments (for methods and functions) as keys for the memorized results.
 

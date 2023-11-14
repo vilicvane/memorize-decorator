@@ -1,1 +1,9 @@
-/node_modules/
+# General
+.DS_Store
+*.tgz
+node_modules/
+# Package Manager
+yarn-error.log
+# TypeScript Build Artifacts
+bld/
+*.tsbuildinfo
