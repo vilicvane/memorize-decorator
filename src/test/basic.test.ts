@@ -1,220 +1,215 @@
-// tslint:disable:no-unused-expression
-// tslint:disable:no-implicit-dependencies
+import {jest} from '@jest/globals';
 
-import * as Sinon from 'sinon';
+import memorize, {memorize as theSameMemorize} from '../library/index.js';
 
-import memorize, {memorize as theSameMemorize} from '../library';
-
-describe('memorize', () => {
-  context('exports', () => {
-    it('should export default', () => {
-      memorize.should.equal(theSameMemorize);
-    });
+describe('exports', () => {
+  it('should export default', () => {
+    expect(memorize).toEqual(theSameMemorize);
   });
+});
 
-  context('getters and methods', () => {
-    it('should handle getters', () => {
-      let spy = Sinon.spy(() => 123);
+describe('getters and methods', () => {
+  it('should handle getters', () => {
+    const spy = jest.fn(() => 123);
 
-      class Foo {
-        @memorize()
-        get property(): number {
-          return spy();
-        }
-      }
-
-      let foo = new Foo();
-
-      spy.called.should.be.false;
-
-      foo.property.should.equal(123);
-      spy.calledOnce.should.be.true;
-
-      foo.property.should.equal(123);
-      spy.calledOnce.should.be.true;
-    });
-
-    it('should handle static getters', () => {
-      let spy = Sinon.spy(() => 123);
-
-      class Foo {
-        @memorize()
-        static get property(): number {
-          return spy();
-        }
-      }
-
-      spy.called.should.be.false;
-
-      Foo.property.should.equal(123);
-      spy.calledOnce.should.be.true;
-
-      Foo.property.should.equal(123);
-      spy.calledOnce.should.be.true;
-    });
-
-    it('should handle methods', () => {
-      let spy = Sinon.spy(() => 123);
-
-      class Foo {
-        @memorize()
-        method(): number {
-          return spy();
-        }
-      }
-
-      let foo = new Foo();
-
-      spy.called.should.be.false;
-
-      foo.method().should.equal(123);
-      spy.calledOnce.should.be.true;
-
-      foo.method().should.equal(123);
-      spy.calledOnce.should.be.true;
-    });
-
-    it('should handle static methods', () => {
-      let spy = Sinon.spy(() => 123);
-
-      class Foo {
-        @memorize()
-        static method(): number {
-          return spy();
-        }
-      }
-
-      spy.called.should.be.false;
-
-      Foo.method().should.equal(123);
-      spy.calledOnce.should.be.true;
-
-      Foo.method().should.equal(123);
-      spy.calledOnce.should.be.true;
-    });
-
-    it('should handle ttl', async () => {
-      let spy = Sinon.spy(() => 123);
-
-      class Foo {
-        @memorize({ttl: 0})
-        get property(): number {
-          return spy();
-        }
-      }
-
-      let foo = new Foo();
-
-      spy.called.should.be.false;
-
-      foo.property.should.equal(123);
-      spy.calledOnce.should.be.true;
-
-      foo.property.should.equal(123);
-      spy.calledOnce.should.be.true;
-
-      await new Promise<void>(resolve => setTimeout(resolve, 10));
-
-      foo.property.should.equal(123);
-      spy.calledTwice.should.be.true;
-    });
-
-    it('should handle ttl being false', async () => {
-      let spy = Sinon.spy(() => 123);
-
-      class Foo {
-        @memorize({ttl: false})
-        get property(): number {
-          return spy();
-        }
-      }
-
-      let foo = new Foo();
-
-      spy.called.should.be.false;
-
-      foo.property.should.equal(123);
-      spy.calledOnce.should.be.true;
-
-      foo.property.should.equal(123);
-      spy.calledOnce.should.be.true;
-
-      await new Promise<void>(resolve => setTimeout(resolve, 0));
-
-      foo.property.should.equal(123);
-      spy.calledTwice.should.be.true;
-    });
-
-    it('should handle ttl being "async"', async () => {
-      let values = [123, 456, 789];
-      let unstable = true;
-
-      class Foo {
-        @memorize({ttl: 'async'})
-        async getValue(): Promise<number> {
-          await new Promise<void>(resolve => setTimeout(resolve, 10));
-          return values.shift()!;
-        }
-
-        @memorize({ttl: 'async'})
-        async getUnstableValue(): Promise<number> {
-          await new Promise<void>((resolve, reject) => {
-            if (unstable) {
-              reject();
-            } else {
-              setTimeout(resolve, 10);
-            }
-          });
-
-          return values.shift()!;
-        }
-      }
-
-      let foo = new Foo();
-
-      let [a, b] = await Promise.all([foo.getValue(), foo.getValue()]);
-
-      a.should.equal(123);
-      b.should.equal(123);
-
-      let c = await foo.getValue();
-
-      c.should.equal(456);
-
-      let e = 0;
-      let f = 0;
-
-      try {
-        await Promise.all([foo.getUnstableValue(), foo.getUnstableValue()]);
-      } catch (err) {
-        unstable = false;
-        [e, f] = await Promise.all([
-          foo.getUnstableValue(),
-          foo.getUnstableValue(),
-        ]);
-      }
-
-      e.should.equal(789);
-      f.should.equal(789);
-    });
-  });
-
-  context('functions', () => {
-    it('should handle functions', () => {
-      let spy = Sinon.spy(() => 123);
-
-      let fn = memorize(function test() {
+    class Foo {
+      @memorize()
+      get property(): number {
         return spy();
-      });
+      }
+    }
 
-      spy.called.should.be.false;
+    const foo = new Foo();
 
-      fn().should.equal(123);
-      (fn as any).name.should.equal('test');
-      spy.calledOnce.should.be.true;
+    expect(spy).not.toHaveBeenCalled;
 
-      fn().should.equal(123);
-      spy.calledOnce.should.be.true;
+    expect(foo.property).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    expect(foo.property).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle static getters', () => {
+    const spy = jest.fn(() => 123);
+
+    class Foo {
+      @memorize()
+      static get property(): number {
+        return spy();
+      }
+    }
+
+    expect(spy).not.toHaveBeenCalled;
+
+    expect(Foo.property).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    expect(Foo.property).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle methods', () => {
+    const spy = jest.fn(() => 123);
+
+    class Foo {
+      @memorize()
+      method(): number {
+        return spy();
+      }
+    }
+
+    const foo = new Foo();
+
+    expect(spy).not.toHaveBeenCalled;
+
+    expect(foo.method()).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    expect(foo.method()).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle static methods', () => {
+    const spy = jest.fn(() => 123);
+
+    class Foo {
+      @memorize()
+      static method(): number {
+        return spy();
+      }
+    }
+
+    expect(spy).not.toHaveBeenCalled;
+
+    expect(Foo.method()).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    expect(Foo.method()).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle ttl', async () => {
+    const spy = jest.fn(() => 123);
+
+    class Foo {
+      @memorize({ttl: 0})
+      get property(): number {
+        return spy();
+      }
+    }
+
+    const foo = new Foo();
+
+    expect(spy).not.toHaveBeenCalled;
+
+    expect(foo.property).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    expect(foo.property).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    await new Promise<void>(resolve => setTimeout(resolve, 10));
+
+    expect(foo.property).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(2);
+  });
+
+  it('should handle ttl being false', async () => {
+    const spy = jest.fn(() => 123);
+
+    class Foo {
+      @memorize({ttl: false})
+      get property(): number {
+        return spy();
+      }
+    }
+
+    const foo = new Foo();
+
+    expect(spy).not.toHaveBeenCalled;
+
+    expect(foo.property).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    expect(foo.property).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    await new Promise<void>(resolve => setTimeout(resolve, 0));
+
+    expect(foo.property).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(2);
+  });
+
+  it('should handle ttl being "async"', async () => {
+    const values = [123, 456, 789];
+    let unstable = true;
+
+    class Foo {
+      @memorize({ttl: 'async'})
+      async getValue(): Promise<number> {
+        await new Promise<void>(resolve => setTimeout(resolve, 10));
+        return values.shift()!;
+      }
+
+      @memorize({ttl: 'async'})
+      async getUnstableValue(): Promise<number> {
+        await new Promise<void>((resolve, reject) => {
+          if (unstable) {
+            reject();
+          } else {
+            setTimeout(resolve, 10);
+          }
+        });
+
+        return values.shift()!;
+      }
+    }
+
+    const foo = new Foo();
+
+    const [a, b] = await Promise.all([foo.getValue(), foo.getValue()]);
+
+    expect(a).toEqual(123);
+    expect(b).toEqual(123);
+
+    const c = await foo.getValue();
+
+    expect(c).toEqual(456);
+
+    let e = 0;
+    let f = 0;
+
+    try {
+      await Promise.all([foo.getUnstableValue(), foo.getUnstableValue()]);
+    } catch (err) {
+      unstable = false;
+      [e, f] = await Promise.all([
+        foo.getUnstableValue(),
+        foo.getUnstableValue(),
+      ]);
+    }
+
+    expect(e).toEqual(789);
+    expect(f).toEqual(789);
+  });
+});
+
+describe('functions', () => {
+  it('should handle functions', () => {
+    const spy = jest.fn(() => 123);
+
+    const fn = memorize(function test() {
+      return spy();
     });
+
+    expect(spy).not.toHaveBeenCalled;
+
+    expect(fn()).toEqual(123);
+    expect((fn as any).name).toEqual('test');
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    expect(fn()).toEqual(123);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });
