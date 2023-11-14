@@ -2,44 +2,7 @@
   "name": "memorize-decorator",
   "version": "0.2.4",
   "description": "A simple decorator that memorizes results of methods and getters.",
-  "main": "bld/index.js",
-  "typings": "bld/index.d.ts",
-  "scripts": {
-    "lint": "tslint --project tsconfig.json --type-check",
-    "build": "tsc",
-    "test": "mocha"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vilic/memorize-decorator.git"
-  },
-  "keywords": [
-    "memorize",
-    "decorator",
-    "typescript",
-    "babel",
-    "es7"
-  ],
-  "author": "vilicvane",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/vilic/memorize-decorator/issues"
-  },
-  "homepage": "https://github.com/vilic/memorize-decorator#readme",
   "devDependencies": {
-    "@types/chai": "^4.0.3",
-    "@types/mocha": "^2.2.41",
-    "@types/node": "^8.0.24",
-    "@types/sinon": "^2.3.3",
-    "chai": "^4.1.1",
-    "mocha": "^3.5.0",
-    "prettier": "^1.8.2",
-    "sinon": "^3.2.1",
-    "source-map-support": "^0.4.16",
-    "tslint": "^5.8.0",
-    "tslint-language-service": "^0.9.6",
-    "typescript": "^2.6.1",
-    "vts": "^5.8.2"
   },
   "dependencies": {
     "multikey-map": "^0.2.0"

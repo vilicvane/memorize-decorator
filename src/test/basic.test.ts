@@ -3,7 +3,7 @@
 
 import * as Sinon from 'sinon';
 
-import memorize, {memorize as theSameMemorize} from '..';
+import memorize, {memorize as theSameMemorize} from '../library';
 
 describe('memorize', () => {
   context('exports', () => {
