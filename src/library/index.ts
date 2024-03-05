@@ -84,7 +84,11 @@ function buildIntermediateFunction(
         if (ttl === false) {
           RESOLVED.then(cleanUp);
         } else {
-          setTimeout(cleanUp, ttl);
+          const timer = setTimeout(cleanUp, ttl) as any;
+
+          if (typeof timer === 'object' && typeof timer.unref === 'function') {
+            timer.unref();
+          }
         }
       }
     }
