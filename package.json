@@ -1,6 +1,6 @@
 {
   "name": "memorize-decorator",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A simple decorator that memorizes results of methods and getters.",
   "repository": "https://github.com/vilicvane/memorize-decorator.git",
   "license": "MIT",
